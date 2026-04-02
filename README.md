@@ -33,6 +33,19 @@ Building HTML emails with raw CSS? Hours of fighting compatibility bugs across G
 | Package | Category | What It Solves |
 |---------|----------|----------------|
 | [react-email](packages/react/react-email/) | React | Build cross-client compatible HTML emails with React components |
+| [swr](packages/react/swr/) | React | Data fetching with caching, deduplication, and automatic revalidation |
+| [@vercel/analytics](packages/react/vercel-analytics/) | React | Privacy-first, cookie-free analytics with zero config |
+| [flags](packages/react/flags/) | React | Provider-agnostic feature flags SDK — toggle features without redeploys |
+| [nuqs](packages/react/nuqs/) | React | Type-safe URL search params as React state |
+| [milkdown](packages/react/milkdown/) | React | Plugin-driven Markdown WYSIWYG editor for React |
+| [@vercel/blob](packages/node/vercel-blob/) | Node.js | Globally distributed file storage with a 3-line API |
+| [@vercel/edge-config](packages/node/vercel-edge-config/) | Node.js | Sub-millisecond global key-value reads for config and feature flags |
+| [@vercel/functions](packages/node/vercel-functions/) | Node.js | Geolocation, IP detection, and background tasks for Vercel functions |
+| [turbo](packages/node/turborepo/) | Node.js | Monorepo build system with smart caching — only rebuilds what changed |
+| [ai (Vercel AI SDK)](packages/general-js/ai-sdk/) | General JS | Unified API for 20+ LLM providers — switch models without rewriting code |
+| [lenis](packages/general-js/lenis/) | General JS | Lightweight smooth scroll library — no jank, no bulk |
+| [valibot](packages/general-js/valibot/) | General JS | Tiny, tree-shakeable schema validation — Zod alternative at ~10x smaller bundle |
+| [jsPDF](packages/general-js/jspdf/) | General JS | Client-side PDF generation — create and download PDFs without a server |
 
 ---
 
