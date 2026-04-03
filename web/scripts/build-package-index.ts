@@ -90,5 +90,6 @@ function buildIndex(): Package[] {
 }
 
 const packages = buildIndex();
+fs.mkdirSync(path.dirname(outputFile), { recursive: true });
 fs.writeFileSync(outputFile, JSON.stringify(packages, null, 2));
 console.log(`[build] Generated ${packages.length} packages → src/data/packages.json`);
