@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import type { EnrichedResult } from "@/lib/types";
+import { getGroqKey } from "@/lib/groq-key";
+import ApiKeyManager from "./ApiKeyManager";
 import ResultsGrid from "./ResultsGrid";
 
 export default function SearchBox() {
@@ -9,30 +11,52 @@ export default function SearchBox() {
   const [results, setResults] = useState<EnrichedResult[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showByok, setShowByok] = useState(false);
+  const [hasUserKey, setHasUserKey] = useState(false);
+  const [pendingRetry, setPendingRetry] = useState(false);
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    const trimmed = query.trim();
-    if (!trimmed) return;
+  useEffect(() => {
+    setHasUserKey(getGroqKey() !== null);
+  }, []);
 
+  // Auto-retry search after user saves a new key
+  useEffect(() => {
+    if (pendingRetry && hasUserKey && query.trim()) {
+      setPendingRetry(false);
+      doSearch(query.trim());
+    }
+  }, [pendingRetry, hasUserKey]);
+
+  async function doSearch(trimmed: string) {
     setLoading(true);
     setError(null);
     setResults(null);
 
     try {
+      const userKey = getGroqKey();
       const res = await fetch("/api/search", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(userKey ? { "x-groq-api-key": userKey } : {}),
+        },
         body: JSON.stringify({ query: trimmed }),
       });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
+        if (res.status === 429) {
+          setShowByok(true);
+        }
+        if (res.status === 401 && data?.code === "INVALID_USER_KEY") {
+          setShowByok(true);
+        }
         throw new Error(data?.error ?? `Request failed: ${res.status}`);
       }
 
       const data = await res.json();
       setResults(data.results ?? []);
+      setShowByok(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -40,8 +64,24 @@ export default function SearchBox() {
     }
   }
 
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    doSearch(trimmed);
+  }
+
+  function handleKeyChange() {
+    const keyExists = getGroqKey() !== null;
+    setHasUserKey(keyExists);
+    setShowByok(false);
+    if (keyExists && query.trim()) {
+      setPendingRetry(true);
+    }
+  }
+
   return (
-    <div className="w-full flex flex-col gap-8">
+    <div className="w-full flex flex-col gap-4">
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input
           type="text"
@@ -60,8 +100,8 @@ export default function SearchBox() {
         </button>
       </form>
 
-      {!results && !loading && (
-        <div className="flex flex-wrap gap-2">
+      {!results && !loading && !showByok && (
+        <div className="flex flex-wrap items-center gap-2">
           {[
             "I need a form validation library",
             "Lightweight state management for React",
@@ -77,10 +117,21 @@ export default function SearchBox() {
               {example}
             </button>
           ))}
+          {!hasUserKey && (
+            <button
+              type="button"
+              onClick={() => setShowByok(true)}
+              className="ml-auto text-xs text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+            >
+              API Key
+            </button>
+          )}
         </div>
       )}
 
-      {error && (
+      <ApiKeyManager show={showByok} onKeyChange={handleKeyChange} />
+
+      {error && !showByok && (
         <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
       )}
 

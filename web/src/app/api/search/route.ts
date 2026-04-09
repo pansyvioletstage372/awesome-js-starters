@@ -3,7 +3,7 @@ import { createGroq } from "@ai-sdk/groq";
 import type { EnrichedResult, Package } from "@/lib/types";
 import packagesData from "@/data/packages.json";
 
-const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });
+const defaultGroq = createGroq({ apiKey: process.env.GROQ_API_KEY });
 
 const packages = packagesData as Package[];
 
@@ -12,6 +12,20 @@ const catalog = packages
   .join("\n");
 
 export async function POST(request: Request) {
+  // SECURITY: Never log or persist user-provided API keys
+  const userApiKey = request.headers.get("x-groq-api-key")?.trim() || null;
+
+  if (userApiKey && !userApiKey.startsWith("gsk_")) {
+    return Response.json(
+      { error: "Invalid API key format.", code: "INVALID_USER_KEY" },
+      { status: 400 },
+    );
+  }
+
+  const activeGroq = userApiKey
+    ? createGroq({ apiKey: userApiKey })
+    : defaultGroq;
+
   let query: string;
   try {
     const body = await request.json();
@@ -27,7 +41,7 @@ export async function POST(request: Request) {
   let matches: Array<{ name: string; reason: string }>;
   try {
     const { text } = await generateText({
-      model: groq("llama-3.3-70b-versatile"),
+      model: activeGroq("llama-3.3-70b-versatile"),
       prompt: `You are a package recommendation assistant for awesome-js-starters, a community-curated list of battle-tested npm packages.
 
 Given a developer's use case, recommend the most relevant packages from the catalog below.
@@ -49,10 +63,35 @@ Respond with ONLY a valid JSON array (no markdown, no explanation):
   } catch (err) {
     const message = err instanceof Error ? err.message : "AI request failed";
     console.error("[search] error:", message);
+
+    if (userApiKey) {
+      const isAuthError =
+        message.includes("401") ||
+        message.toLowerCase().includes("unauthorized") ||
+        message.toLowerCase().includes("invalid");
+      if (isAuthError) {
+        return Response.json(
+          { error: "Your API key appears to be invalid. Please check it and try again.", code: "INVALID_USER_KEY" },
+          { status: 401 },
+        );
+      }
+    }
+
     const isQuota = message.includes("quota") || message.includes("rate") || message.includes("429");
+    if (isQuota) {
+      return Response.json(
+        {
+          error: userApiKey
+            ? "Your Groq API key has hit its rate limit. Please wait a moment and try again."
+            : "Too many requests. Please wait a moment and try again.",
+        },
+        { status: 429 },
+      );
+    }
+
     return Response.json(
-      { error: isQuota ? "Too many requests. Please wait a moment and try again." : "Failed to get recommendations. Please try again." },
-      { status: isQuota ? 429 : 500 }
+      { error: "Failed to get recommendations. Please try again." },
+      { status: 500 },
     );
   }
 
