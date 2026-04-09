@@ -60,6 +60,26 @@ export default function SearchBox() {
         </button>
       </form>
 
+      {!results && !loading && (
+        <div className="flex flex-wrap gap-2">
+          {[
+            "I need a form validation library",
+            "Lightweight state management for React",
+            "Generate PDFs from HTML",
+            "Fast date formatting and parsing",
+          ].map((example) => (
+            <button
+              key={example}
+              type="button"
+              onClick={() => setQuery(example)}
+              className="rounded-full border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-1.5 text-xs text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+            >
+              {example}
+            </button>
+          ))}
+        </div>
+      )}
+
       {error && (
         <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
       )}
