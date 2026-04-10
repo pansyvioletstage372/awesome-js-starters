@@ -10,6 +10,21 @@ Anyone who has **personally used** a package and found it genuinely useful. You 
 
 ---
 
+## Quality Requirements
+
+To keep the catalog useful and trustworthy, submitted packages must meet these minimum thresholds:
+
+- **Published on npm for at least 30 days** — we want packages with some real-world usage, not brand-new experiments
+- **At least 500 weekly npm downloads OR 50+ GitHub stars** — this is a low bar by design, since we focus on hidden gems that most developers haven't discovered yet
+- **Not deprecated or archived** — the package should be actively maintained or stable enough that it still works well
+- **Not already listed** — search the `packages/` directory before submitting to avoid duplicates
+
+If a similar package already exists in the catalog (e.g., another validation library), explain in your PR description what makes yours different or better for a specific use case.
+
+> These thresholds aren't gatekeeping — they help ensure the package has minimum traction and won't disappear tomorrow.
+
+---
+
 ## What Makes a Good Submission?
 
 A great submission answers these questions for a developer who has never heard of the package:
@@ -39,7 +54,9 @@ A great submission answers these questions for a developer who has never heard o
 
 ## Package README Template
 
-Copy this into your `packages/<category>/<package-name>/README.md`:
+Copy this into your `packages/<category>/<package-name>/README.md`.
+
+> **Important:** The `> ` blockquote on line 3 is **required** — our website's build system parses it to generate the package index. The `**npm:**`, `**GitHub:**`, and `**Docs:**` link fields are also parsed programmatically. Deviating from this template means your package won't appear correctly on the website.
 
 ```markdown
 # <package-name>

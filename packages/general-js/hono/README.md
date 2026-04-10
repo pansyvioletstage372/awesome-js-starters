@@ -1,6 +1,6 @@
 # Hono
 
-A tiny, lightning-fast web framework that helps you build APIs and websites that run quickly all over the world.
+> A tiny, lightning-fast web framework that helps you build APIs and websites that run quickly all over the world.
 
 **npm:** https://www.npmjs.com/package/hono
 **GitHub:** https://github.com/honojs/hono

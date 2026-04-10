@@ -1,6 +1,6 @@
 # Apache ECharts
 
-A library that turns your data into beautiful, interactive maps and charts that users can explore.
+> A library that turns your data into beautiful, interactive maps and charts that users can explore.
 
 **npm:** https://www.npmjs.com/package/echarts
 **GitHub:** https://github.com/apache/echarts

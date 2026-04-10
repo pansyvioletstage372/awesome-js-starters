@@ -48,6 +48,39 @@ export default function ResultCard({ result }: Props) {
         </p>
       )}
 
+      {(result.githubStars || result.weeklyDownloads || result.lastUpdated) && (
+        <div className="flex flex-wrap gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+          {result.githubStars != null && (
+            <span title="GitHub stars">
+              {"★ "}
+              {result.githubStars >= 1000
+                ? `${(result.githubStars / 1000).toFixed(1)}k`
+                : result.githubStars}
+            </span>
+          )}
+          {result.weeklyDownloads != null && (
+            <span title="Weekly npm downloads">
+              {"↓ "}
+              {result.weeklyDownloads >= 1000000
+                ? `${(result.weeklyDownloads / 1000000).toFixed(1)}M/wk`
+                : result.weeklyDownloads >= 1000
+                  ? `${(result.weeklyDownloads / 1000).toFixed(1)}k/wk`
+                  : `${result.weeklyDownloads}/wk`}
+            </span>
+          )}
+          {result.lastUpdated && (
+            <span title="Last updated">
+              {"⟳ "}
+              {new Date(result.lastUpdated).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </span>
+          )}
+        </div>
+      )}
+
       <p className="text-sm italic text-zinc-500 dark:text-zinc-400 border-l-2 border-zinc-300 dark:border-zinc-700 pl-3">
         {result.reason}
       </p>

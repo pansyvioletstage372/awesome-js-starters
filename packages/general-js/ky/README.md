@@ -1,6 +1,6 @@
 # Ky
 
-A friendlier version of the standard fetch function used to request data from other websites or servers.
+> A friendlier version of the standard fetch function used to request data from other websites or servers.
 
 **npm:** https://www.npmjs.com/package/ky
 **GitHub:** https://github.com/sindresorhus/ky

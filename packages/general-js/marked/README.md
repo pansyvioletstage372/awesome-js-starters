@@ -1,6 +1,6 @@
 # Marked
 
-A high-speed tool that takes text written in Markdown and instantly converts it into proper HTML for your website.
+> A high-speed tool that takes text written in Markdown and instantly converts it into proper HTML for your website.
 
 **npm:** https://www.npmjs.com/package/marked
 **GitHub:** https://github.com/markedjs/marked
