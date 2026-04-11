@@ -6,12 +6,18 @@ import packagesData from "@/data/packages.json";
 
 const packages = packagesData as Package[];
 
-const CATEGORY_COLORS: Record<string, string> = {
-  react: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
-  node: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
-  "general-js":
-    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300",
+const CAT_STYLE: Record<string, { bg: string; color: string }> = {
+  react:        { bg: "rgba(59,130,246,0.12)",  color: "#60a5fa" },
+  node:         { bg: "rgba(34,197,94,0.12)",   color: "#4ade80" },
+  "general-js": { bg: "rgba(234,179,8,0.12)",   color: "#facc15" },
 };
+
+function fmt(n: number | undefined, suffix = ""): string {
+  if (n == null) return "";
+  if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M${suffix}`;
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}k${suffix}`;
+  return `${n}${suffix}`;
+}
 
 export default function DiscoverRandom() {
   const [pkg, setPkg] = useState<Package | null>(null);
@@ -19,130 +25,67 @@ export default function DiscoverRandom() {
 
   function discover() {
     setSpinning(true);
-    // Cycle through a few random packages for a slot-machine effect
     let count = 0;
     const interval = setInterval(() => {
-      const randomIdx = Math.floor(Math.random() * packages.length);
-      setPkg(packages[randomIdx]);
-      count++;
-      if (count >= 8) {
-        clearInterval(interval);
-        setSpinning(false);
-      }
+      setPkg(packages[Math.floor(Math.random() * packages.length)]);
+      if (++count >= 8) { clearInterval(interval); setSpinning(false); }
     }, 100);
   }
 
+  const cat = pkg ? (CAT_STYLE[pkg.category] ?? { bg: "rgba(255,255,255,0.06)", color: "#8a8f98" }) : null;
+
   return (
-    <div className="w-full flex flex-col items-center gap-8">
-      <button
-        type="button"
-        onClick={discover}
-        disabled={spinning}
-        className={`relative rounded-full h-40 w-40 flex items-center justify-center text-6xl border-4 transition-all duration-300 ${
-          spinning
-            ? "border-zinc-400 dark:border-zinc-600 animate-pulse scale-95"
-            : "border-zinc-300 dark:border-zinc-700 hover:border-zinc-900 dark:hover:border-zinc-100 hover:scale-105 hover:shadow-lg cursor-pointer"
-        }`}
+    <div className="flex flex-col items-center gap-8 w-full max-w-lg">
+      <button type="button" onClick={discover} disabled={spinning}
+        className="rounded-full h-36 w-36 flex items-center justify-center text-5xl transition-all duration-300"
+        style={{
+          border: spinning ? "3px solid rgba(255,255,255,0.12)" : "3px solid rgba(255,255,255,0.12)",
+          background: spinning ? "rgba(94,106,210,0.08)" : "rgba(255,255,255,0.02)",
+          transform: spinning ? "scale(0.95)" : undefined,
+          cursor: spinning ? "default" : "pointer",
+          boxShadow: spinning ? "none" : "0 0 0 1px rgba(94,106,210,0) ",
+          transition: "all 0.2s ease",
+        }}
+        onMouseEnter={(e) => { if (!spinning) { (e.currentTarget as HTMLElement).style.borderColor = "#5e6ad2"; (e.currentTarget as HTMLElement).style.background = "rgba(94,106,210,0.08)"; (e.currentTarget as HTMLElement).style.transform = "scale(1.05)"; }}}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.02)"; (e.currentTarget as HTMLElement).style.transform = "none"; }}
       >
-        <span className={spinning ? "animate-spin" : ""}>
-          {spinning ? "🎰" : "🎲"}
-        </span>
+        <span className={spinning ? "animate-spin" : ""}>{spinning ? "🎰" : "🎲"}</span>
       </button>
 
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
-        {spinning
-          ? "Shuffling..."
-          : pkg
-            ? "Click again to discover another gem"
-            : "Click to discover a random package"}
+      <p style={{ fontSize: 13, color: "#62666d" }}>
+        {spinning ? "Shuffling..." : pkg ? "Click again to discover another gem" : "Click to discover a random package"}
       </p>
 
       {pkg && !spinning && (
-        <div className="w-full max-w-lg rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-md transition-all animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div className="w-full rounded-xl p-5"
+          style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)" }}>
           <div className="flex items-start justify-between gap-3 mb-3">
-            <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-              {pkg.name}
-            </h2>
-            <span
-              className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                CATEGORY_COLORS[pkg.category] ??
-                "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-              }`}
-            >
-              {pkg.category}
-            </span>
+            <h2 style={{ fontSize: 20, fontWeight: 590, color: "#f7f8f8", letterSpacing: "-0.24px" }}>{pkg.name}</h2>
+            {cat && (
+              <span className="shrink-0 rounded-full px-2.5 py-0.5" style={{ fontSize: 11, fontWeight: 510, background: cat.bg, color: cat.color }}>{pkg.category}</span>
+            )}
           </div>
 
           {pkg.description && (
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
-              {pkg.description}
-            </p>
+            <p style={{ fontSize: 14, color: "#8a8f98", lineHeight: 1.6, marginBottom: 16 }}>{pkg.description}</p>
           )}
 
           {(pkg.githubStars || pkg.weeklyDownloads) && (
-            <div className="flex gap-4 mb-4 text-xs text-zinc-500 dark:text-zinc-400">
-              {pkg.githubStars != null && (
-                <span>
-                  {"★ "}
-                  {pkg.githubStars >= 1000
-                    ? `${(pkg.githubStars / 1000).toFixed(1)}k`
-                    : pkg.githubStars}{" "}
-                  stars
-                </span>
-              )}
-              {pkg.weeklyDownloads != null && (
-                <span>
-                  {"↓ "}
-                  {pkg.weeklyDownloads >= 1000000
-                    ? `${(pkg.weeklyDownloads / 1000000).toFixed(1)}M`
-                    : pkg.weeklyDownloads >= 1000
-                      ? `${(pkg.weeklyDownloads / 1000).toFixed(1)}k`
-                      : pkg.weeklyDownloads}
-                  /wk
-                </span>
-              )}
+            <div className="flex gap-4 mb-4" style={{ fontSize: 12, color: "#62666d" }}>
+              {pkg.githubStars != null && <span>★ {fmt(pkg.githubStars)} stars</span>}
+              {pkg.weeklyDownloads != null && <span>↓ {fmt(pkg.weeklyDownloads, "/wk")}</span>}
             </div>
           )}
 
-          <div className="flex flex-wrap gap-2">
-            {pkg.npm && (
-              <a
-                href={pkg.npm}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-md bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-              >
-                npm
-              </a>
-            )}
-            {pkg.github && (
-              <a
-                href={pkg.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-md bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-              >
-                GitHub
-              </a>
-            )}
-            {pkg.docs && (
-              <a
-                href={pkg.docs}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-md bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-              >
-                Docs
-              </a>
-            )}
-            <a
-              href={`https://github.com/farhan523/awesome-js-starters/tree/main/${pkg.repoPath}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-md bg-zinc-900 dark:bg-zinc-100 px-3 py-1.5 text-xs font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 transition-colors"
-            >
-              View in repo →
-            </a>
+          <div className="flex flex-wrap gap-1.5">
+            {pkg.npm && <a href={pkg.npm} target="_blank" rel="noopener noreferrer" className="rounded-md px-2.5 py-1 transition-colors" style={{ fontSize: 12, fontWeight: 510, color: "#8a8f98", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>npm</a>}
+            {pkg.github && <a href={pkg.github} target="_blank" rel="noopener noreferrer" className="rounded-md px-2.5 py-1 transition-colors" style={{ fontSize: 12, fontWeight: 510, color: "#8a8f98", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>GitHub</a>}
+            {pkg.docs && <a href={pkg.docs} target="_blank" rel="noopener noreferrer" className="rounded-md px-2.5 py-1 transition-colors" style={{ fontSize: 12, fontWeight: 510, color: "#8a8f98", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>Docs</a>}
+            <a href={`https://github.com/farhan523/awesome-js-starters/tree/main/${pkg.repoPath}`} target="_blank" rel="noopener noreferrer"
+              className="ml-auto rounded-md px-2.5 py-1 transition-colors" style={{ fontSize: 12, fontWeight: 510, color: "#fff", background: "#5e6ad2" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#7170ff"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "#5e6ad2"; }}
+            >View in repo →</a>
           </div>
         </div>
       )}

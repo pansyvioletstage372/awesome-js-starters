@@ -1,129 +1,135 @@
 import type { EnrichedResult } from "@/lib/types";
 
-const CATEGORY_COLORS: Record<string, string> = {
-  react: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
-  node: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
-  "general-js":
-    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300",
+const CATEGORY_COLORS: Record<string, { bg: string; color: string }> = {
+  react:        { bg: "rgba(59,130,246,0.12)",  color: "#60a5fa" },
+  node:         { bg: "rgba(34,197,94,0.12)",   color: "#4ade80" },
+  "general-js": { bg: "rgba(234,179,8,0.12)",   color: "#facc15" },
+  angular:      { bg: "rgba(239,68,68,0.12)",   color: "#f87171" },
+  vue:          { bg: "rgba(16,185,129,0.12)",  color: "#34d399" },
+  express:      { bg: "rgba(139,92,246,0.12)",  color: "#a78bfa" },
+  fastify:      { bg: "rgba(249,115,22,0.12)",  color: "#fb923c" },
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
-  react: "React",
-  node: "Node.js",
+  react:        "React",
+  node:         "Node.js",
   "general-js": "General JS",
-  angular: "Angular",
-  vue: "Vue",
-  express: "posts",
-  fastify: "Fastify",
+  angular:      "Angular",
+  vue:          "Vue",
+  express:      "Express",
+  fastify:      "Fastify",
 };
 
 interface Props {
   result: EnrichedResult;
 }
 
-export default function ResultCard({ result }: Props) {
-  const colorClass =
-    CATEGORY_COLORS[result.category] ??
-    "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300";
-  const categoryLabel = CATEGORY_LABELS[result.category] ?? result.category;
+function StatPill({ children }: { children: React.ReactNode }) {
+  return (
+    <span style={{ fontSize: 11, fontWeight: 510, color: "#62666d", letterSpacing: "-0.13px" }}>
+      {children}
+    </span>
+  );
+}
 
+export default function ResultCard({ result }: Props) {
+  const cat = CATEGORY_COLORS[result.category] ?? { bg: "rgba(255,255,255,0.06)", color: "#8a8f98" };
+  const catLabel = CATEGORY_LABELS[result.category] ?? result.category;
   const repoUrl = `https://github.com/farhan523/awesome-js-starters/tree/main/${result.repoPath}`;
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-sm hover:shadow-md transition-shadow">
+    <div
+      className="flex flex-col gap-3.5 rounded-xl p-4 transition-all group"
+      style={{
+        background: "rgba(255,255,255,0.02)",
+        border: "1px solid rgba(255,255,255,0.08)",
+        borderRadius: 8,
+      }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)"; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.02)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.08)"; }}
+    >
+      {/* Header */}
       <div className="flex items-start justify-between gap-2">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+        <h2 style={{ fontSize: 14, fontWeight: 590, color: "#f7f8f8", letterSpacing: "-0.24px", lineHeight: 1.3 }}>
           {result.name}
         </h2>
         <span
-          className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${colorClass}`}
+          className="shrink-0 rounded-full px-2 py-0.5"
+          style={{ fontSize: 11, fontWeight: 510, background: cat.bg, color: cat.color, letterSpacing: "-0.13px", whiteSpace: "nowrap" }}
         >
-          {categoryLabel}
+          {catLabel}
         </span>
       </div>
 
+      {/* Description */}
       {result.description && (
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p style={{ fontSize: 13, fontWeight: 400, color: "#8a8f98", lineHeight: 1.6, letterSpacing: "-0.165px" }}>
           {result.description}
         </p>
       )}
 
-      {(result.githubStars || result.weeklyDownloads || result.lastUpdated) && (
-        <div className="flex flex-wrap gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+      {/* Stats */}
+      {(result.githubStars != null || result.weeklyDownloads != null || result.lastUpdated) && (
+        <div className="flex items-center gap-3">
           {result.githubStars != null && (
-            <span title="GitHub stars">
-              {"★ "}
-              {result.githubStars >= 1000
-                ? `${(result.githubStars / 1000).toFixed(1)}k`
-                : result.githubStars}
-            </span>
+            <StatPill>
+              ★{" "}{result.githubStars >= 1000 ? `${(result.githubStars / 1000).toFixed(1)}k` : result.githubStars}
+            </StatPill>
           )}
           {result.weeklyDownloads != null && (
-            <span title="Weekly npm downloads">
-              {"↓ "}
-              {result.weeklyDownloads >= 1000000
+            <StatPill>
+              ↓{" "}{result.weeklyDownloads >= 1000000
                 ? `${(result.weeklyDownloads / 1000000).toFixed(1)}M/wk`
                 : result.weeklyDownloads >= 1000
                   ? `${(result.weeklyDownloads / 1000).toFixed(1)}k/wk`
                   : `${result.weeklyDownloads}/wk`}
-            </span>
+            </StatPill>
           )}
           {result.lastUpdated && (
-            <span title="Last updated">
-              {"⟳ "}
-              {new Date(result.lastUpdated).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </span>
+            <StatPill>
+              {new Date(result.lastUpdated).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+            </StatPill>
           )}
         </div>
       )}
 
-      <p className="text-sm italic text-zinc-500 dark:text-zinc-400 border-l-2 border-zinc-300 dark:border-zinc-700 pl-3">
+      {/* AI reason */}
+      <p style={{ fontSize: 12, fontStyle: "italic", color: "#62666d", lineHeight: 1.5, borderLeft: "2px solid rgba(255,255,255,0.08)", paddingLeft: 10 }}>
         {result.reason}
       </p>
 
-      <div className="flex flex-wrap gap-2 mt-auto pt-2">
+      {/* Links */}
+      <div className="flex flex-wrap gap-1.5 mt-auto pt-1">
         {result.npm && (
-          <a
-            href={result.npm}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-md bg-zinc-100 dark:bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-          >
-            npm
-          </a>
+          <a href={result.npm} target="_blank" rel="noopener noreferrer"
+            className="rounded-md px-2.5 py-1 transition-colors"
+            style={{ fontSize: 12, fontWeight: 510, color: "#8a8f98", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#d0d6e0"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#8a8f98"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)"; }}
+          >npm</a>
         )}
         {result.github && (
-          <a
-            href={result.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-md bg-zinc-100 dark:bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-          >
-            GitHub
-          </a>
+          <a href={result.github} target="_blank" rel="noopener noreferrer"
+            className="rounded-md px-2.5 py-1 transition-colors"
+            style={{ fontSize: 12, fontWeight: 510, color: "#8a8f98", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#d0d6e0"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#8a8f98"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)"; }}
+          >GitHub</a>
         )}
         {result.docs && (
-          <a
-            href={result.docs}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-md bg-zinc-100 dark:bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-          >
-            Docs
-          </a>
+          <a href={result.docs} target="_blank" rel="noopener noreferrer"
+            className="rounded-md px-2.5 py-1 transition-colors"
+            style={{ fontSize: 12, fontWeight: 510, color: "#8a8f98", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#d0d6e0"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#8a8f98"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)"; }}
+          >Docs</a>
         )}
-        <a
-          href={repoUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="rounded-md bg-zinc-900 dark:bg-zinc-100 px-3 py-1 text-xs font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 transition-colors"
-        >
-          View in repo →
-        </a>
+        <a href={repoUrl} target="_blank" rel="noopener noreferrer"
+          className="ml-auto rounded-md px-2.5 py-1 transition-colors"
+          style={{ fontSize: 12, fontWeight: 510, color: "#f7f8f8", background: "#5e6ad2" }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#7170ff"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "#5e6ad2"; }}
+        >View →</a>
       </div>
     </div>
   );

@@ -1,26 +1,133 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@custom-variant dark (&:is(.dark *));
+
+/* ─── Linear Design System ─────────────────────────────────────── */
+/* Font feature settings applied globally for Inter's cv01 + ss03  */
+@layer base {
+  * {
+    font-feature-settings: "cv01", "ss03";
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-mono-custom);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+  --radius-2xl: calc(var(--radius) + 10px);
+  --radius-full: 9999px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Linear Dark Theme (always-on) ──────────────────────────── */
+:root {
+  /* Surfaces — luminance stepping model */
+  --background: #08090a;        /* Marketing Black: deepest canvas */
+  --card: #0f1011;              /* Panel Dark: sidebar / card bg */
+  --popover: #191a1b;           /* Level 3: elevated dropdowns */
+  --secondary: #191a1b;         /* Elevated surface for secondary elements */
+  --muted: #191a1b;             /* Muted surface */
+  --accent: #1e1f20;            /* Accent surface (hover states) */
+
+  /* Foregrounds */
+  --foreground: #f7f8f8;        /* Primary text — near-white */
+  --card-foreground: #f7f8f8;
+  --popover-foreground: #f7f8f8;
+  --secondary-foreground: #d0d6e0;   /* Silver-gray: body text */
+  --muted-foreground: #8a8f98;       /* Tertiary: placeholders, metadata */
+  --accent-foreground: #f7f8f8;
+
+  /* Brand — Linear's signature indigo-violet */
+  --primary: #5e6ad2;           /* Brand Indigo CTA */
+  --primary-foreground: #ffffff;
+  --ring: #5e6ad2;              /* Focus ring matches brand */
+
+  /* Status */
+  --destructive: #ef4444;
+
+  /* Borders — semi-transparent white (Linear's defining detail) */
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.05);
+
+  /* Radius — Linear uses 6px as comfortable default */
+  --radius: 6px;
+
+  /* Linear custom tokens */
+  --linear-accent-violet: #7170ff;
+  --linear-accent-hover: #828fff;
+  --linear-text-secondary: #d0d6e0;
+  --linear-text-tertiary: #8a8f98;
+  --linear-text-quaternary: #62666d;
+  --linear-surface-2: #191a1b;
+  --linear-surface-3: #28282c;
+  --linear-border-subtle: rgba(255, 255, 255, 0.05);
+  --linear-border-standard: rgba(255, 255, 255, 0.08);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Keep .dark in sync (shadcn uses it for theming) */
+.dark {
+  --background: #08090a;
+  --card: #0f1011;
+  --popover: #191a1b;
+  --secondary: #191a1b;
+  --muted: #191a1b;
+  --accent: #1e1f20;
+  --foreground: #f7f8f8;
+  --card-foreground: #f7f8f8;
+  --popover-foreground: #f7f8f8;
+  --secondary-foreground: #d0d6e0;
+  --muted-foreground: #8a8f98;
+  --accent-foreground: #f7f8f8;
+  --primary: #5e6ad2;
+  --primary-foreground: #ffffff;
+  --ring: #5e6ad2;
+  --destructive: #ef4444;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.05);
+  --radius: 6px;
+}
+
+/* ─── Utility classes that shadcn doesn't ship ─────────────────── */
+@layer utilities {
+  .text-linear-secondary { color: #d0d6e0; }
+  .text-linear-tertiary  { color: #8a8f98; }
+  .text-linear-quaternary{ color: #62666d; }
+  .bg-linear-surface     { background-color: #0f1011; }
+  .bg-linear-elevated    { background-color: #191a1b; }
+  .bg-linear-card        { background-color: rgba(255,255,255,0.02); }
+  .border-linear         { border-color: rgba(255,255,255,0.08); }
+  .border-linear-subtle  { border-color: rgba(255,255,255,0.05); }
 }

@@ -1,12 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  getGroqKey,
-  setGroqKey,
-  removeGroqKey,
-  isValidGroqKeyFormat,
-} from "@/lib/groq-key";
+import { getGroqKey, setGroqKey, removeGroqKey, isValidGroqKeyFormat } from "@/lib/groq-key";
 
 interface ApiKeyManagerProps {
   show: boolean;
@@ -19,23 +14,17 @@ export default function ApiKeyManager({ show, onKeyChange }: ApiKeyManagerProps)
   const [validationError, setValidationError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  useEffect(() => {
-    setStoredKey(getGroqKey());
-  }, []);
+  useEffect(() => { setStoredKey(getGroqKey()); }, []);
 
   const expanded = show || isEditing;
 
   function handleSave() {
     const trimmed = inputValue.trim();
     if (!trimmed) return;
-
     if (!isValidGroqKeyFormat(trimmed)) {
-      setValidationError(
-        "Key should start with gsk_ — please check and try again.",
-      );
+      setValidationError("Key should start with gsk_ — please check and try again.");
       return;
     }
-
     setGroqKey(trimmed);
     setStoredKey(trimmed);
     setInputValue("");
@@ -58,29 +47,15 @@ export default function ApiKeyManager({ show, onKeyChange }: ApiKeyManagerProps)
     return key.slice(0, 4) + "••••••••" + key.slice(-4);
   }
 
-  // Compact indicator when key is stored and panel is not expanded
   if (storedKey && !expanded) {
     return (
-      <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
-        <svg
-          className="h-3.5 w-3.5"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z"
-          />
+      <div className="flex items-center gap-2" style={{ fontSize: 12, color: "#62666d" }}>
+        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
         </svg>
         <span>Using your Groq API key</span>
-        <button
-          type="button"
-          onClick={() => setIsEditing(true)}
-          className="underline hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-        >
+        <button type="button" onClick={() => setIsEditing(true)}
+          style={{ color: "#8a8f98", textDecoration: "underline" }}>
           Change
         </button>
       </div>
@@ -90,45 +65,32 @@ export default function ApiKeyManager({ show, onKeyChange }: ApiKeyManagerProps)
   if (!expanded) return null;
 
   return (
-    <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 flex flex-col gap-4">
+    <div className="rounded-xl flex flex-col gap-4 p-5"
+      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)" }}>
       <div className="flex flex-col gap-1">
-        <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+        <h3 style={{ fontSize: 14, fontWeight: 590, color: "#f7f8f8", letterSpacing: "-0.13px" }}>
           Use your own Groq API key
         </h3>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          The default API key has hit its rate limit. You can use your own free
-          Groq API key to continue searching.
+        <p style={{ fontSize: 12, color: "#62666d", lineHeight: 1.5 }}>
+          The default API key has hit its rate limit. Use your own free Groq key to continue.
         </p>
       </div>
 
-      <ol className="text-xs text-zinc-600 dark:text-zinc-400 list-decimal list-inside flex flex-col gap-1.5">
-        <li>
-          Go to{" "}
-          <a
-            href="https://console.groq.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline font-medium text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-300"
-          >
+      <ol className="flex flex-col gap-1.5" style={{ fontSize: 12, color: "#8a8f98", listStyleType: "decimal", paddingLeft: 16 }}>
+        <li>Go to{" "}
+          <a href="https://console.groq.com" target="_blank" rel="noopener noreferrer"
+            style={{ color: "#7170ff", textDecoration: "underline" }}>
             console.groq.com
-          </a>{" "}
-          and sign up (free)
+          </a>{" "}and sign up (free)
         </li>
-        <li>
-          Navigate to <span className="font-medium">API Keys</span> in the
-          sidebar
-        </li>
+        <li>Navigate to <span style={{ color: "#d0d6e0", fontWeight: 510 }}>API Keys</span> in the sidebar</li>
         <li>Create a new API key and copy it</li>
       </ol>
 
       {storedKey && !inputValue && (
-        <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400">
+        <div className="flex items-center gap-3" style={{ fontSize: 12, color: "#62666d" }}>
           <span className="font-mono">{maskKey(storedKey)}</span>
-          <button
-            type="button"
-            onClick={handleRemove}
-            className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 underline transition-colors"
-          >
+          <button type="button" onClick={handleRemove} style={{ color: "#f87171", textDecoration: "underline" }}>
             Remove key
           </button>
         </div>
@@ -138,30 +100,31 @@ export default function ApiKeyManager({ show, onKeyChange }: ApiKeyManagerProps)
         <input
           type="password"
           value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-            setValidationError(null);
-          }}
+          onChange={(e) => { setInputValue(e.target.value); setValidationError(null); }}
           placeholder="gsk_..."
-          className="flex-1 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100"
+          className="flex-1 rounded-md px-3 py-2 outline-none transition-all font-mono"
+          style={{
+            fontSize: 13,
+            color: "#f7f8f8",
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.08)",
+          }}
+          onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)"; }}
+          onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
         />
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!inputValue.trim()}
-          className="rounded-lg bg-zinc-900 dark:bg-zinc-100 px-4 py-2 text-sm font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        <button type="button" onClick={handleSave} disabled={!inputValue.trim()}
+          className="rounded-md px-4 py-2 transition-colors disabled:opacity-40"
+          style={{ fontSize: 13, fontWeight: 510, color: "#fff", background: "#5e6ad2" }}
+          onMouseEnter={(e) => { if (!(e.currentTarget as HTMLButtonElement).disabled) (e.currentTarget as HTMLElement).style.background = "#7170ff"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "#5e6ad2"; }}
         >
           Save key
         </button>
         {(isEditing || show) && (
-          <button
-            type="button"
-            onClick={() => {
-              setIsEditing(false);
-              setInputValue("");
-              setValidationError(null);
-            }}
-            className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          <button type="button"
+            onClick={() => { setIsEditing(false); setInputValue(""); setValidationError(null); }}
+            className="rounded-md px-4 py-2 transition-colors"
+            style={{ fontSize: 13, fontWeight: 510, color: "#8a8f98", border: "1px solid rgba(255,255,255,0.08)", background: "transparent" }}
           >
             Cancel
           </button>
@@ -169,14 +132,11 @@ export default function ApiKeyManager({ show, onKeyChange }: ApiKeyManagerProps)
       </div>
 
       {validationError && (
-        <p className="text-xs text-red-600 dark:text-red-400">
-          {validationError}
-        </p>
+        <p style={{ fontSize: 12, color: "#f87171" }}>{validationError}</p>
       )}
 
-      <p className="text-[11px] text-zinc-400 dark:text-zinc-500">
-        Your key is stored only in your browser. We never store it on our
-        servers.
+      <p style={{ fontSize: 11, color: "#62666d" }}>
+        Your key is stored only in your browser. We never store it on our servers.
       </p>
     </div>
   );
