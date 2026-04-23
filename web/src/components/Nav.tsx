@@ -35,6 +35,7 @@ const moreLinks = [
 const guideLinks = [
   { href: "/guides", label: "All guides" },
   { href: "/guides/package-managers", label: "npm vs yarn vs pnpm" },
+  { href: "/guides/bundlers", label: "Vite vs Webpack vs esbuild" },
 ];
 
 export default function Nav() {

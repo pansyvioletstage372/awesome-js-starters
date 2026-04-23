@@ -16,6 +16,13 @@ const guides = [
       "Four package managers, four philosophies. When to pick each one, what breaks in monorepos, and why disk usage matters.",
     tags: ["tooling", "package managers"],
   },
+  {
+    href: "/guides/bundlers",
+    title: "Vite vs Webpack vs esbuild vs Turbopack vs Rollup",
+    blurb:
+      "The bundler landscape in one page — which tool wins for apps, which for libraries, and why most of the tradeoffs have already been made for you.",
+    tags: ["tooling", "bundlers", "build"],
+  },
 ];
 
 export default function GuidesIndexPage() {
