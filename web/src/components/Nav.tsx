@@ -32,16 +32,26 @@ const moreLinks = [
   { href: "/leaderboard", label: "Leaderboard" },
 ];
 
+const guideLinks = [
+  { href: "/guides", label: "All guides" },
+  { href: "/guides/package-managers", label: "npm vs yarn vs pnpm" },
+];
+
 export default function Nav() {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
+  const [guidesOpen, setGuidesOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const guidesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMoreOpen(false);
+      }
+      if (guidesRef.current && !guidesRef.current.contains(e.target as Node)) {
+        setGuidesOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClick);
@@ -50,11 +60,14 @@ export default function Nav() {
 
   useEffect(() => {
     setMoreOpen(false);
+    setGuidesOpen(false);
     setMobileOpen(false);
   }, [pathname]);
 
   const moreActive = moreLinks.some((l) => l.href === pathname);
-  const allLinks = [...primaryLinks, ...moreLinks];
+  const guidesActive =
+    pathname === "/guides" || pathname.startsWith("/guides/");
+  const allLinks = [...primaryLinks, ...moreLinks, ...guideLinks];
 
   return (
     <nav
@@ -92,6 +105,51 @@ export default function Nav() {
               </Link>
             );
           })}
+
+          <div className="relative" ref={guidesRef}>
+            <button
+              type="button"
+              onClick={() => setGuidesOpen(!guidesOpen)}
+              className={cn(
+                "flex items-center gap-1 rounded-md px-2.5 py-1.5 text-[13px] font-medium tracking-tight transition-colors",
+                guidesActive
+                  ? "bg-white/6 text-foreground"
+                  : "text-muted-foreground hover:text-secondary-foreground"
+              )}
+            >
+              Guides
+              <ChevronDownIcon
+                className={cn(
+                  "size-3 opacity-60 transition-transform",
+                  guidesOpen && "rotate-180"
+                )}
+              />
+            </button>
+
+            {guidesOpen && (
+              <div
+                className="absolute top-full right-0 z-50 mt-1.5 w-56 rounded-lg border border-border bg-popover py-1 shadow-lg"
+              >
+                {guideLinks.map(({ href, label }) => {
+                  const active = pathname === href;
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      className={cn(
+                        "block px-3 py-2 text-[13px] transition-colors",
+                        active
+                          ? "bg-white/5 font-medium text-foreground"
+                          : "text-muted-foreground hover:bg-white/4 hover:text-secondary-foreground"
+                      )}
+                    >
+                      {label}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
           <div className="relative" ref={menuRef}>
             <button
